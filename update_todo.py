@@ -25,6 +25,9 @@
 
 
 import sys, getopt
+import re, os
+from itertools import islice
+import linecache
 
 def main(argv):
     infile = ''
@@ -43,5 +46,29 @@ def main(argv):
 
     print "Updating: ", infile
 
+    # Regex to match date
+    re_date = re.compile(r'([0-9]{1,2}/[0-9]{1,2})')
+    f = open(infile, 'r+')
+    num_lines = sum(1 for line in f)
+    last_date = ''
+    date_line = 0
+    f.seek(0)
+    for i, line in enumerate(f.readlines()):
+        searchedstr = re_date.findall(line)
+        for word in searchedstr:
+            last_date = word
+            date_line = i
+            break
+    f.close()
+    copy_lines = []
+    for i in range (date_line, num_lines):
+        line = linecache.getline(infile,i)
+        copy_lines.append(line)
+    re_complete = re.compile(r'\s*X.*')
+    for line in copy_lines:
+        searchedstr = re_complete.findall(line)
+        for word in searchedstr:
+            print "Word :" + str(word)
+            print "Line: " + line
 if __name__ == "__main__":
     main(sys.argv[1:])
