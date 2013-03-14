@@ -64,11 +64,16 @@ def main(argv):
     for i in range (date_line, num_lines):
         line = linecache.getline(infile,i)
         copy_lines.append(line)
-    re_complete = re.compile(r'\s*X.*')
+    re_complete = re.compile(r'[.*|\s*]X.*')
+    delete_lines = []
+    for i in range(0,len(copy_lines)):
+        matched = re_complete.search(copy_lines[i])
+        if matched:
+            delete_lines.append(copy_lines[i])
+    for i in range(0,len(delete_lines)):
+        del copy_lines[copy_lines.index(delete_lines[i])]
+    f = open(infile, 'a')
     for line in copy_lines:
-        searchedstr = re_complete.findall(line)
-        for word in searchedstr:
-            print "Word :" + str(word)
-            print "Line: " + line
+        f.write(line)
 if __name__ == "__main__":
     main(sys.argv[1:])
